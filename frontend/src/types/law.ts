@@ -1,18 +1,36 @@
 export interface Law {
     id: string;
     title: string;
+    summary: string;
     description: string;
-    content: string;
     category: string;
-    confidenceScore: number;
     tags: string[];
     supportingPapers: string[];
     contradictingPapers: string[];
-    createdAt: string;
     updatedAt: string;
     publishedAt: string;
-    archivedAt: string | null;
-    status: 'draft' | 'published' | 'archived';
-    categoryId?: string;
-    sourceUrl?: string;
+    confidenceScore: number;
+}
+
+export interface Paper {
+    title: string;
+    authors: string[];
+    publishDate: string;
+    source: string;
+    doi: string;
+}
+
+export interface GraphData {
+    nodes: {
+        id: string;
+        title: string;
+        category: string;
+        confidenceScore: number;
+    }[];
+    links: {
+        source: string;
+        target: string;
+        relationship: string;
+        strength: number;
+    }[];
 } 
