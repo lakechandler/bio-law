@@ -1,0 +1,719 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Ensure that every action made is in alignment with this PRD:
+
+## Executive Summary
+
+Biology Laws Hub is a web platform that aggregates scientific research from authoritative sources to create a repository of "Biology Laws" - evidence-based biological principles accessible to health-conscious consumers. Built with Next.js for the frontend and Encore.ts for the backend, the platform automatically updates its knowledge base when new scientific findings emerge, ensuring users always have access to the most current biological understanding.
+
+## 1. Product Overview
+
+### 1.1 Vision
+
+To bridge the gap between complex scientific research and practical consumer knowledge by transforming academic publications into clear, actionable biological principles that empower individuals to make informed health decisions.
+
+### 1.2 Problem Statement
+
+Health-conscious consumers struggle to stay current with scientific research due to:
+- The overwhelming volume of scientific publications
+- Complex technical language in academic papers
+- Contradictory findings across studies
+- Lack of synthesis between individual research papers
+- Time required to monitor multiple scientific sources
+
+### 1.3 Solution
+
+Biology Laws Hub addresses these challenges by:
+- Automatically aggregating research from authoritative sources (PubMed, Springer, Nature)
+- Using NLP and ML to extract and synthesize key biological principles
+- Presenting these "Biology Laws" in accessible language
+- Providing confidence scores based on supporting evidence
+- Automatically updating laws when new contradicting evidence emerges
+- Linking back to primary sources for transparency
+
+### 1.4 Target Audience
+
+Primary:
+- Health-conscious consumers (25-55)
+- Wellness professionals (nutritionists, trainers, coaches)
+- Health content creators and educators
+
+Secondary:
+- Medical professionals seeking quick reference
+- Scientific researchers exploring cross-disciplinary insights
+- Students in biological and health sciences
+
+### 1.5 Key Value Propositions
+
+- **Trusted Knowledge**: All laws derived directly from peer-reviewed research
+- **Clarity**: Complex scientific findings translated into accessible language
+- **Currency**: Automated updates when new research emerges
+- **Transparency**: Full traceability back to primary sources
+- **Comprehensiveness**: Cross-disciplinary insights across biological sciences
+
+## 2. User Requirements
+
+### 2.1 User Personas
+
+#### 2.1.1 Health-Conscious Consumer (Sarah)
+- 35-year-old professional
+- Actively seeks evidence-based health information
+- Limited time to read scientific papers
+- Wants trustworthy, actionable information
+- Needs: Quick access to reliable biological principles that can inform lifestyle choices
+
+#### 2.1.2 Wellness Professional (Marcus)
+- Nutritionist with private practice
+- Uses scientific evidence to support client recommendations
+- Needs to stay current with research but has limited time
+- Needs: Comprehensive, searchable database of biological principles with confidence ratings and source citations
+
+#### 2.1.3 Content Creator (Elena)
+- Health and wellness blogger
+- Creates educational content about biology and health
+- Requires scientific accuracy in her work
+- Needs: Reliable resource for fact-checking and discovering new biological insights to share
+
+#### 2.1.4 Scientific Researcher (Dr. Chen)
+- Academic researcher in molecular biology
+- Looking for cross-disciplinary insights
+- Needs quick reference for areas outside his specialty
+- Needs: Searchable database of biological principles with links to primary literature
+
+### 2.2 User Stories
+
+#### For Health-Conscious Consumers
+- As a health-conscious consumer, I want to browse biological principles by category so I can learn about specific areas of interest.
+- As a health-conscious consumer, I want to see confidence ratings for each "Biology Law" so I can understand how well-established it is.
+- As a health-conscious consumer, I want to search for specific topics so I can quickly find relevant biological principles.
+- As a health-conscious consumer, I want to receive notifications when laws related to my interests are updated so I can stay current.
+
+#### For Wellness Professionals
+- As a wellness professional, I want to access the primary sources behind each "Biology Law" so I can dive deeper when necessary.
+- As a wellness professional, I want to see when a law was last updated so I know it reflects current research.
+- As a wellness professional, I want to filter laws by confidence score so I can focus on well-established principles.
+- As a wellness professional, I want to save favorite laws to a personalized dashboard for quick reference with clients.
+
+#### For Content Creators
+- As a content creator, I want to export citations for the primary sources underlying each law so I can properly attribute information.
+- As a content creator, I want to see trending or recently updated laws so I can create timely content.
+- As a content creator, I want to receive alerts when significant contradictions emerge in established laws so I can update my content.
+
+#### For Scientific Researchers
+- As a researcher, I want to see contradicting evidence for each law so I can understand scientific debates.
+- As a researcher, I want to filter laws by recency of supporting evidence so I can focus on cutting-edge findings.
+- As a researcher, I want to explore connections between laws across different categories to discover interdisciplinary insights.
+
+## 3. Functional Requirements
+
+### 3.1 Core Features
+
+#### 3.1.1 Law Discovery and Display
+- Hierarchical category browsing
+- Full-text search with relevant filtering options
+- Law detail view showing:
+  - Law statement in plain language
+  - Confidence score
+  - Categories/tags
+  - Supporting evidence (papers)
+  - Contradicting evidence (papers)
+  - Version history
+  - Last updated date
+- Related laws section
+
+#### 3.1.2 User Accounts and Personalization
+- User registration and authentication
+- Profile customization:
+  - Interests selection
+  - Notification preferences
+  - Display preferences
+- Saved favorites
+- Personalized recommendations
+- Recent view history
+
+#### 3.1.3 Content Updates and Notifications
+- In-app notification center
+- Email notification system
+- Notification triggers:
+  - New laws in areas of interest
+  - Updates to saved laws
+  - Major contradictions to established laws
+  - Weekly digest of changes
+- Notification management interface
+
+#### 3.1.4 Source Transparency
+- Links to primary sources (research papers)
+- Citation export functionality (APA, MLA, Chicago)
+- Confidence score explanation
+- Methodology transparency section
+
+### 3.2 Administrative Features
+
+#### 3.2.1 Content Moderation Interface
+- Review queue for automated law extraction
+- Manual override capabilities
+- Editing interface for law statements
+- Category management
+- Flag management for user-reported issues
+
+#### 3.2.2 System Monitoring
+- Dashboard for data source connectivity
+- Processing pipeline status
+- Error rates and logs
+- System performance metrics
+- User engagement analytics
+
+### 3.3 API Access
+
+- RESTful API for third-party integration
+- Endpoint documentation
+- Rate limiting and authentication
+- Webhook support for real-time updates
+
+## 4. Technical Requirements
+
+### 4.1 System Architecture
+
+#### 4.1.1 Frontend (Next.js)
+- **Framework**: Next.js with TypeScript
+- **State Management**: React Context API for global state, SWR for data fetching
+- **Styling**: Tailwind CSS for rapid development and consistent design
+- **Rendering Strategy**:
+  - Server-Side Rendering (SSR) for dynamic pages with personalized content
+  - Static Site Generation (SSG) for stable content like established laws
+  - Incremental Static Regeneration (ISR) for automatically updating pages when laws change
+- **Authentication**: NextAuth.js for flexible auth providers
+- **Component Library**: Either Chakra UI or shadcn/ui for accessible components
+- **Routing**: Next.js App Router for type-safe, nested routing
+
+#### 4.1.2 Backend Services (Encore.ts)
+- **Framework**: Encore.ts with TypeScript
+- **Service Architecture**:
+  - `data-ingestion-service`: Fetches papers from external sources
+  - `nlp-processing-service`: Processes papers with NLP
+  - `law-extraction-service`: Extracts and manages Biology Laws
+  - `user-service`: Handles user accounts and personalization
+  - `notification-service`: Manages user notifications
+- **Inter-Service Communication**: Encore.ts built-in service calls and PubSub
+- **Database Access**: Encore.ts SQLDatabase for PostgreSQL integration
+- **Scheduled Tasks**: Encore.ts Cron for regular paper fetching and processing
+
+#### 4.1.3 Data Storage
+- **Primary Database**: PostgreSQL (managed by Encore.ts)
+- **Search Engine**: Elasticsearch for full-text search
+- **Caching Layer**: Redis for frequently accessed data
+- **Media Storage**: Cloud storage for any supplementary materials
+
+#### 4.1.4 Deployment and Infrastructure
+- **Frontend Deployment**: Vercel (optimized for Next.js)
+- **Backend Deployment**: Encore Cloud or self-hosted Docker containers
+- **Continuous Integration**: GitHub Actions for automated testing and deployment
+- **Monitoring**: Encore's built-in monitoring and observability tools
+- **Scaling Strategy**: Horizontal scaling with containerization
+
+### 4.2 Data Sources Integration
+
+#### 4.2.1 PubMed Integration
+- Integration with E-utilities API
+- Daily scheduled ingestion (7:00 AM)
+- Paper metadata extraction
+- Abstract and content analysis
+
+#### 4.2.2 Springer Integration
+- Integration with Springer Open Access API
+- Authentication and rate limit compliance
+- Metadata and full-text extraction
+
+#### 4.2.3 Nature Integration
+- API integration for article retrieval
+- Content extraction and preprocessing
+- Mapping to internal data model
+
+### 4.3 NLP Pipeline
+
+#### 4.3.1 Document Processing
+- Text extraction from various formats
+- Entity recognition using spaCy or Hugging Face transformers
+- Relation extraction between biological entities
+- Citation network analysis
+
+#### 4.3.2 Law Extraction
+- Pattern matching for potential law statements
+- Confidence scoring based on supporting evidence
+- Contradiction detection between papers
+- Automated categorization
+
+#### 4.3.3 Model Training and Evaluation
+- Training data generation from expert-labeled examples
+- Model evaluation metrics for extraction quality
+- Continuous improvement pipeline
+- Fallback to human review for low-confidence cases
+
+### 4.4 Next.js Frontend Implementation
+
+#### 4.4.1 Page Structure
+- `/` - Homepage with featured laws and categories
+- `/laws/[id]` - Individual law page with details and evidence
+- `/categories/[id]` - Category page with related laws
+- `/search` - Search results page with filtering
+- `/dashboard` - Personalized user dashboard
+- `/settings` - User settings and preferences
+- `/admin` - Admin dashboard (protected)
+
+#### 4.4.2 Component Architecture
+- Atomic design pattern with shared components
+- Layout components for consistent page structure
+- Data fetching components with loading states
+- Error boundary components for graceful degradation
+
+#### 4.4.3 Client-Side Features
+- Progressive Web App (PWA) capabilities
+- Advanced search with filters and sorting
+- Interactive visualizations of related laws
+- Citation generator for sharing
+
+### 4.5 Encore.ts Backend Implementation
+
+#### 4.5.1 Data Ingestion Service
+```typescript
+// Simplified example of Encore.ts data ingestion service
+import { api } from "encore.dev";
+import { SQLDatabase } from "encore.dev/storage/sqldb";
+import { PubSub } from "encore.dev/pubsub";
+
+// Define database for papers
+const db = new SQLDatabase("papers", {
+  migrations: "./migrations",
+});
+
+// Define PubSub topic for paper processing
+const papersTopic = new PubSub.Topic<{paperId: string}>("papers-to-process");
+
+// API endpoint to trigger data fetch
+api.post("/fetch-papers", async () => {
+  // Fetch papers from PubMed, Springer, etc.
+  const papers = await fetchPapers();
+  
+  // Store papers in database
+  for (const paper of papers) {
+    await db.exec`
+      INSERT INTO papers (id, title, abstract, source, publish_date)
+      VALUES (${paper.id}, ${paper.title}, ${paper.abstract}, ${paper.source}, ${paper.publishDate})
+    `;
+    
+    // Publish to processing queue
+    await papersTopic.publish({paperId: paper.id});
+  }
+  
+  return { count: papers.length };
+});
+
+// Scheduled daily fetch at 7:00 AM
+api.cron("fetch-daily", "0 7 * * *", async () => {
+  await api.fetch.post("/fetch-papers", {});
+});
+```
+
+#### 4.5.2 NLP Processing Service
+```typescript
+// Simplified example of Encore.ts NLP service
+import { api } from "encore.dev";
+import { SQLDatabase } from "encore.dev/storage/sqldb";
+import { PubSub } from "encore.dev/pubsub";
+
+// Define databases
+const papersDb = new SQLDatabase("papers", {
+  migrations: "./migrations",
+});
+
+const processedDb = new SQLDatabase("processed_papers", {
+  migrations: "./migrations",
+});
+
+// Define PubSub topics
+const papersTopic = new PubSub.Topic<{paperId: string}>("papers-to-process");
+const lawsTopic = new PubSub.Topic<{paperId: string}>("laws-to-extract");
+
+// Subscribe to papers topic
+papersTopic.subscribe("process-papers", async (msg) => {
+  const paper = await fetchPaper(msg.paperId);
+  
+  // Process paper with NLP
+  const entities = await extractEntities(paper.abstract);
+  const sentences = await extractKeySentences(paper.abstract);
+  
+  // Store processed results
+  await processedDb.exec`
+    INSERT INTO processed_papers (paper_id, entities, sentences)
+    VALUES (${paper.id}, ${JSON.stringify(entities)}, ${JSON.stringify(sentences)})
+  `;
+  
+  // Publish to law extraction topic
+  await lawsTopic.publish({paperId: paper.id});
+});
+```
+
+#### 4.5.3 Law Extraction Service
+```typescript
+// Simplified example of Encore.ts law extraction service
+import { api } from "encore.dev";
+import { SQLDatabase } from "encore.dev/storage/sqldb";
+import { PubSub } from "encore.dev/pubsub";
+
+// Define databases
+const lawsDb = new SQLDatabase("laws", {
+  migrations: "./migrations",
+});
+
+const processedDb = new SQLDatabase("processed_papers", {
+  migrations: "./migrations",
+});
+
+// Define PubSub topics
+const lawsTopic = new PubSub.Topic<{paperId: string}>("laws-to-extract");
+const updatedLawsTopic = new PubSub.Topic<{lawId: string}>("law-updated");
+
+// Subscribe to laws topic
+lawsTopic.subscribe("extract-laws", async (msg) => {
+  const processedPaper = await fetchProcessedPaper(msg.paperId);
+  
+  // Extract candidate laws
+  const candidateLaws = await extractCandidateLaws(processedPaper);
+  
+  for (const candidate of candidateLaws) {
+    // Check for existing laws to update
+    const existingLaw = await findSimilarLaw(candidate.statement);
+    
+    if (existingLaw) {
+      // Update existing law
+      await updateExistingLaw(existingLaw, candidate, processedPaper);
+      await updatedLawsTopic.publish({lawId: existingLaw.id});
+    } else {
+      // Create new law
+      const newLawId = await createNewLaw(candidate, processedPaper);
+      await updatedLawsTopic.publish({lawId: newLawId});
+    }
+  }
+});
+
+// API to get laws
+api.get("/laws", async () => {
+  const laws = await lawsDb.query`SELECT * FROM laws ORDER BY confidence_score DESC LIMIT 100`;
+  return { laws };
+});
+
+// API to get law by ID
+api.get("/laws/:id", async (req) => {
+  const law = await lawsDb.queryRow`SELECT * FROM laws WHERE id = ${req.params.id}`;
+  return law;
+});
+```
+
+#### 4.5.4 User Service
+```typescript
+// Simplified example of Encore.ts user service
+import { api } from "encore.dev";
+import { SQLDatabase } from "encore.dev/storage/sqldb";
+import { Auth } from "encore.dev/auth";
+
+// Define database
+const usersDb = new SQLDatabase("users", {
+  migrations: "./migrations",
+});
+
+// Initialize auth
+const auth = new Auth.JWT({
+  issuer: "biology-laws-hub",
+});
+
+// User registration
+api.post("/auth/register", async (req) => {
+  const { email, password, name } = req.body;
+  
+  // Create user in database
+  const userId = await createUser(email, password, name);
+  
+  // Generate token
+  const token = await auth.generateToken({
+    subject: userId,
+    payload: { email, name }
+  });
+  
+  return { token, user: { id: userId, email, name } };
+});
+
+// User login
+api.post("/auth/login", async (req) => {
+  const { email, password } = req.body;
+  
+  // Validate credentials
+  const user = await validateCredentials(email, password);
+  
+  if (!user) {
+    throw new Error("Invalid credentials");
+  }
+  
+  // Generate token
+  const token = await auth.generateToken({
+    subject: user.id,
+    payload: { email: user.email, name: user.name }
+  });
+  
+  return { token, user };
+});
+
+// Get user profile (authenticated)
+api.get("/users/me", auth.middleware(), async (req) => {
+  const userId = req.auth.subject;
+  const user = await usersDb.queryRow`SELECT id, email, name FROM users WHERE id = ${userId}`;
+  return user;
+});
+```
+
+### 4.6 Next.js and Encore.ts Integration
+
+#### 4.6.1 Type Sharing
+- Generate TypeScript interfaces from Encore.ts API endpoints
+- Share types between frontend and backend
+- Use generated client for type-safe API calls
+
+#### 4.6.2 Authentication Flow
+- Next.js authentication with NextAuth.js
+- JWT token storage and renewal
+- Protected routes and API endpoints
+
+#### 4.6.3 Data Fetching Strategy
+- SWR for client-side data fetching with caching
+- Server-side data fetching for initial page load
+- Optimistic UI updates for better user experience
+
+#### 4.6.4 Deployment Integration
+- CI/CD pipeline for coordinated deployments
+- Environment variable management
+- Health checks and rollback strategies
+
+## 5. Development and Release Planning
+
+### 5.1 Phase 1: MVP (Month 1-3)
+
+#### 5.1.1 Core Infrastructure
+- Setup Next.js project with TypeScript
+- Initialize Encore.ts backend services
+- Configure PostgreSQL database schemas
+- Implement basic API endpoints
+- Create CI/CD pipeline
+
+#### 5.1.2 Data Ingestion
+- PubMed API integration
+- Basic paper storage and processing
+- Scheduled daily ingestion
+
+#### 5.1.3 Basic NLP Processing
+- Entity extraction pipeline
+- Simple law extraction rules
+- Manual validation interface
+
+#### 5.1.4 Simple Web Interface
+- Basic Next.js pages for laws and categories
+- Search functionality
+- Law detail page with source links
+
+### 5.2 Phase 2: Enhanced Features (Month 4-6)
+
+#### 5.2.1 Additional Data Sources
+- Springer API integration
+- Nature API integration
+- Enhanced metadata extraction
+
+#### 5.2.2 Advanced NLP Pipeline
+- ML-based law extraction
+- Confidence scoring algorithm
+- Contradiction detection
+- Automated categorization
+
+#### 5.2.3 User Features
+- User authentication with NextAuth.js
+- User profiles and preferences
+- Saved favorites
+- Basic notification system
+
+#### 5.2.4 Enhanced UI
+- Improved search with filters
+- Category browsing interface
+- Responsive design optimization
+- Interactive elements
+
+### 5.3 Phase 3: Advanced Functionality (Month 7-9)
+
+#### 5.3.1 Advanced Law Processing
+- Sophisticated contradiction detection
+- Cross-disciplinary insight extraction
+- Automated quality control
+- Knowledge graph visualization
+
+#### 5.3.2 Advanced User Features
+- Personalized recommendations
+- Enhanced notification system
+- Social sharing integration
+- Export functionality
+
+#### 5.3.3 Performance Optimization
+- Next.js ISR for fast page loads
+- Redis caching integration
+- Query optimization
+- CDN integration
+
+#### 5.3.4 Analytics and Monitoring
+- User behavior tracking
+- Content effectiveness metrics
+- System performance monitoring
+- A/B testing framework
+
+### 5.4 Phase 4: Expansion (Month 10-12)
+
+#### 5.4.1 API and Integrations
+- Public API development
+- Webhook support
+- Integration with third-party platforms
+- Developer documentation
+
+#### 5.4.2 Advanced Visualization
+- Interactive knowledge graphs
+- Trend visualization
+- Confidence history charts
+- Relationship mapping
+
+#### 5.4.3 Mobile Experience
+- Progressive Web App implementation
+- Offline functionality
+- Push notifications
+- Touch optimizations
+
+#### 5.4.4 Community Features
+- User feedback system
+- Expert verification program
+- Discussion threads
+- Content voting
+
+## 6. Success Metrics
+
+### 6.1 User Engagement
+- Monthly active users (MAU)
+- Average session duration
+- Pages per session
+- Return rate
+- Feature usage statistics
+
+### 6.2 Content Quality
+- Law extraction accuracy (via sampling)
+- Confidence score correlation with expert ratings
+- User feedback ratings
+- Error report frequency
+- Time to contradiction detection
+
+### 6.3 System Performance
+- Next.js Core Web Vitals metrics
+- Encore.ts API response times
+- Processing pipeline throughput
+- Error rates
+- System uptime
+
+### 6.4 Business Metrics
+- User growth rate
+- Conversion rate (free to premium)
+- Retention rate
+- Cost per user
+- Revenue per user
+
+## 7. Risks and Mitigations
+
+### 7.1 Technical Risks
+
+#### 7.1.1 NLP Accuracy Risk
+- **Risk**: NLP accuracy insufficient for automated extraction
+- **Mitigation**: 
+  - Implement human-in-the-loop validation
+  - Gradual automation with quality thresholds
+  - Continuous model training with feedback loop
+
+#### 7.1.2 Data Source Reliability Risk
+- **Risk**: External APIs change or become unavailable
+- **Mitigation**:
+  - Implement robust error handling
+  - Develop fallback mechanisms
+  - Diversify data sources
+
+#### 7.1.3 Scaling Risk
+- **Risk**: System unable to handle growth in users or content
+- **Mitigation**:
+  - Leverage Next.js ISR for content scaling
+  - Utilize Encore.ts's built-in scaling capabilities
+  - Implement database sharding strategy
+
+### 7.2 Product Risks
+
+#### 7.2.1 Content Complexity Risk
+- **Risk**: Users find laws too complex or overly simplified
+- **Mitigation**:
+  - User testing for language calibration
+  - Layered information design
+  - Progressive disclosure of details
+
+#### 7.2.2 Contradicting Research Risk
+- **Risk**: Contradicting research creates user confusion
+- **Mitigation**:
+  - Clear confidence scoring
+  - Transparent versioning
+  - Visual indicators for contested knowledge
+
+#### 7.2.3 Scientific Accuracy Risk
+- **Risk**: Inaccuracies damage platform credibility
+- **Mitigation**:
+  - Expert review program
+  - User feedback mechanisms
+  - Source verification processes
+
+### 7.3 Market Risks
+
+#### 7.3.1 User Adoption Risk
+- **Risk**: Insufficient user adoption
+- **Mitigation**:
+  - Focus on core user needs
+  - Implement targeted marketing
+  - Create shareable content
+
+#### 7.3.2 Competitive Risk
+- **Risk**: Competitive offerings emerge
+- **Mitigation**:
+  - Accelerate unique feature development
+  - Build data moat
+  - Focus on user experience
+
+#### 7.3.3 Content Access Risk
+- **Risk**: Publishers restrict access to content
+- **Mitigation**:
+  - Diversify sources
+  - Develop academic partnerships
+  - Explore open access resources
+
+## 8. Appendices
+
+### 8.1 Glossary
+
+- **Biology Law**: A clearly articulated biological principle extracted from scientific literature with associated confidence score and supporting evidence
+- **Confidence Score**: Numerical rating (0-1) indicating the level of scientific consensus behind a Biology Law
+- **Primary Source**: Original research paper from which a Biology Law is derived
+- **Contradiction**: New research finding that challenges an existing Biology Law
+- **Category**: Hierarchical classification of Biology Laws by scientific domain
+
+### 8.2 Technical Diagrams
+[Include system architecture diagram, data flow diagram, entity relationship diagram]
+
+### 8.3 UI Mockups
+[Include mockups for key screens: home page, law detail page, search results, user dashboard]
+
+### 8.4 Data Schema
+[Include database schemas, Elasticsearch index mappings]”

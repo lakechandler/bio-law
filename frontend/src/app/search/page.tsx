@@ -1,52 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-
-// Mock data for search results (in a real application, these would come from the API)
-const MOCK_SEARCH_RESULTS = [
-  {
-    id: '1',
-    title: 'Cellular Respiration ATP Production',
-    description: 'The process of cellular respiration produces 36-38 ATP molecules per glucose molecule under optimal conditions.',
-    confidenceScore: 0.95,
-    category: 'Cellular Biology',
-    updatedAt: new Date('2024-01-15')
-  },
-  {
-    id: '2',
-    title: 'Mitochondrial Function',
-    description: 'Mitochondria are the primary site of ATP production in eukaryotic cells through oxidative phosphorylation.',
-    confidenceScore: 0.92,
-    category: 'Cell Biology',
-    updatedAt: new Date('2024-02-10')
-  },
-  {
-    id: '3',
-    title: 'Glycolysis Energy Yield',
-    description: 'Glycolysis produces a net gain of 2 ATP molecules per glucose molecule in both aerobic and anaerobic conditions.',
-    confidenceScore: 0.97,
-    category: 'Biochemistry',
-    updatedAt: new Date('2024-01-05')
-  },
-  {
-    id: '4',
-    title: 'Photosynthesis Light Reactions',
-    description: 'The light-dependent reactions of photosynthesis convert light energy to chemical energy in the form of ATP and NADPH.',
-    confidenceScore: 0.89,
-    category: 'Plant Biology',
-    updatedAt: new Date('2024-03-01')
-  },
-  {
-    id: '5',
-    title: 'DNA Replication Fidelity',
-    description: 'DNA polymerase has proofreading capability that results in an error rate of approximately 1 in 10^9 base pairs.',
-    confidenceScore: 0.91,
-    category: 'Molecular Biology',
-    updatedAt: new Date('2024-02-20')
-  }
-];
+import { laws } from '@/lib/api';
+import { Law } from '@/types/law';
 
 // Categories for filtering
 const CATEGORIES = [
@@ -77,26 +35,56 @@ export default function SearchPage() {
   const initialCategory = searchParams.get('category') || 'All Categories';
   const initialConfidence = parseFloat(searchParams.get('confidence') || '0');
   
-  // State for filters
+  // State for search form
   const [searchQuery, setSearchQuery] = useState(query);
   const [category, setCategory] = useState(initialCategory);
   const [confidenceLevel, setConfidenceLevel] = useState(initialConfidence);
   
-  // Filter results based on current filters
-  const filteredResults = MOCK_SEARCH_RESULTS.filter(result => {
-    // Filter by search term
-    const matchesSearch = query === '' || 
-      result.title.toLowerCase().includes(query.toLowerCase()) ||
-      result.description.toLowerCase().includes(query.toLowerCase());
+  // State for API results
+  const [results, setResults] = useState<Law[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [totalResults, setTotalResults] = useState(0);
+  
+  // Fetch search results when URL parameters change
+  useEffect(() => {
+    const fetchResults = async () => {
+      if (!query && category === 'All Categories' && confidenceLevel === 0) {
+        // If no search criteria, don't search
+        setResults([]);
+        setTotalResults(0);
+        return;
+      }
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Call the API with the search parameters
+        const searchResults = await laws.search(
+          query,
+          category !== 'All Categories' ? category : undefined
+        );
+        
+        // Filter by confidence if needed
+        const filteredResults = confidenceLevel > 0 
+          ? searchResults.filter(law => law.confidenceScore >= confidenceLevel)
+          : searchResults;
+        
+        setResults(filteredResults);
+        setTotalResults(filteredResults.length);
+      } catch (err) {
+        console.error('Error searching laws:', err);
+        setError('Failed to load search results. Please try again.');
+        setResults([]);
+        setTotalResults(0);
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    // Filter by category
-    const matchesCategory = category === 'All Categories' || result.category === category;
-    
-    // Filter by confidence
-    const matchesConfidence = result.confidenceScore >= confidenceLevel;
-    
-    return matchesSearch && matchesCategory && matchesConfidence;
-  });
+    fetchResults();
+  }, [query, category, confidenceLevel]);
   
   // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
@@ -110,6 +98,19 @@ export default function SearchPage() {
     
     router.push(`/search?${params.toString()}`);
   };
+  
+  // Handle sorting changes
+  const [sortBy, setSortBy] = useState<'relevance' | 'confidence' | 'date'>('relevance');
+  
+  // Sort results based on the selected criteria
+  const sortedResults = [...results].sort((a, b) => {
+    if (sortBy === 'confidence') {
+      return b.confidenceScore - a.confidenceScore;
+    } else if (sortBy === 'date') {
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    }
+    return 0; // Default: relevance (as returned by API)
+  });
   
   return (
     <div className="py-10">
@@ -175,72 +176,139 @@ export default function SearchPage() {
             </div>
             
             {query && (
-              <div className="mt-4">
-                <p className="text-sm text-gray-500">
-                  Showing results for <span className="font-medium text-gray-900">&quot;{query}&quot;</span>
-                  {category !== 'All Categories' && (
-                    <span> in <span className="font-medium text-gray-900">{category}</span></span>
-                  )}
-                  {confidenceLevel > 0 && (
-                    <span> with confidence ≥ <span className="font-medium text-gray-900">{(confidenceLevel * 100).toFixed(0)}%</span></span>
-                  )}
-                </p>
+              <div className="mt-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">
+                    Showing <span className="font-medium text-gray-900">{results.length}</span> of <span className="font-medium text-gray-900">{totalResults}</span> results for <span className="font-medium text-gray-900">&quot;{query}&quot;</span>
+                    {category !== 'All Categories' && (
+                      <span> in <span className="font-medium text-gray-900">{category}</span></span>
+                    )}
+                    {confidenceLevel > 0 && (
+                      <span> with confidence ≥ <span className="font-medium text-gray-900">{(confidenceLevel * 100).toFixed(0)}%</span></span>
+                    )}
+                  </p>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-500 mr-2">Sort by:</span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  >
+                    <option value="relevance">Relevance</option>
+                    <option value="confidence">Confidence</option>
+                    <option value="date">Most Recent</option>
+                  </select>
+                </div>
               </div>
             )}
             
-            <div className="mt-8 space-y-6">
-              {filteredResults.length > 0 ? (
-                filteredResults.map((result) => (
-                  <div key={result.id} className="overflow-hidden rounded-lg bg-white shadow">
-                    <div className="px-4 py-5 sm:px-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="text-lg font-medium leading-6 text-gray-900">
-                            <Link href={`/laws/${result.id}`} className="hover:text-indigo-600">
-                              {result.title}
+            {loading ? (
+              <div className="mt-8 text-center">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>
+                <p className="mt-2 text-sm text-gray-500">Searching for biology laws...</p>
+              </div>
+            ) : error ? (
+              <div className="mt-8 rounded-md bg-red-50 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-red-800">{error}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-8 space-y-6">
+                {sortedResults.length > 0 ? (
+                  sortedResults.map((result) => (
+                    <div key={result.id} className="overflow-hidden rounded-lg bg-white shadow">
+                      <div className="px-4 py-5 sm:px-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-lg font-medium leading-6 text-gray-900">
+                              <Link href={`/laws/${result.id}`} className="hover:text-indigo-600">
+                                {result.title}
+                              </Link>
+                            </h3>
+                          </div>
+                          <div className="flex items-center">
+                            <span 
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                                result.confidenceScore >= 0.9
+                                  ? 'bg-green-100 text-green-800'
+                                  : result.confidenceScore >= 0.7
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-yellow-100 text-yellow-800'
+                              }`}
+                            >
+                              {Math.round(result.confidenceScore * 100)}% confidence
+                            </span>
+                          </div>
+                        </div>
+                        <p className="mt-2 text-sm text-gray-500">{result.description}</p>
+                        <div className="mt-4 flex items-center">
+                          <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                            {result.category}
+                          </span>
+                          <span className="ml-2 text-xs text-gray-500">
+                            Updated {new Date(result.updatedAt).toLocaleDateString()}
+                          </span>
+                          <span className="ml-auto">
+                            <Link 
+                              href={`/laws/${result.id}`}
+                              className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                            >
+                              View details <span aria-hidden="true">→</span>
                             </Link>
-                          </h3>
-                          <p className="mt-1 max-w-2xl text-sm text-gray-500">{result.category}</p>
+                          </span>
                         </div>
-                        <div className={`rounded-full px-3 py-1 text-sm font-medium ${
-                          result.confidenceScore >= 0.95 ? 'bg-green-100 text-green-800' :
-                          result.confidenceScore >= 0.8 ? 'bg-green-50 text-green-700' :
-                          result.confidenceScore >= 0.6 ? 'bg-yellow-50 text-yellow-700' :
-                          'bg-red-50 text-red-700'
-                        }`}>
-                          {Math.round(result.confidenceScore * 100)}% confidence
-                        </div>
-                      </div>
-                      <p className="mt-3 text-sm text-gray-500">{result.description}</p>
-                      <div className="mt-4 flex items-center text-xs text-gray-500">
-                        <span>Last updated {result.updatedAt.toLocaleDateString()}</span>
                       </div>
                     </div>
+                  ))
+                ) : query ? (
+                  <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+                    <h3 className="text-lg font-medium text-gray-900">No results found</h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Try adjusting your search or filter criteria to find what you're looking for.
+                    </p>
+                    <div className="mt-6">
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setCategory('All Categories');
+                          setConfidenceLevel(0);
+                          router.push('/search');
+                        }}
+                        className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                      >
+                        Clear all filters
+                      </button>
+                    </div>
                   </div>
-                ))
-              ) : (
-                <div className="py-12 text-center">
-                  <svg
-                    className="mx-auto h-12 w-12 text-gray-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">No results found</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Try adjusting your search or filter criteria.
-                  </p>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+                    <h3 className="text-lg font-medium text-gray-900">Start your search</h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Enter keywords above to search the biology laws database.
+                    </p>
+                    <div className="mt-6">
+                      <Link 
+                        href="/categories"
+                        className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                      >
+                        Browse by category instead
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </main>

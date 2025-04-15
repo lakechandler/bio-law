@@ -1,6 +1,7 @@
 import { Law } from "@/types/law";
 import { User } from "@/types/user";
 import { Notification } from "@/types/notification";
+import { GraphData } from "@/types/graph";
 
 // API base URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -155,6 +156,38 @@ export const laws = {
       },
       body: JSON.stringify({ token, lawId }),
     });
+  },
+  
+  // Get graph data for a specific law
+  getGraphData: async (lawId: string): Promise<GraphData> => {
+    const response = await fetch(`/api/laws/${lawId}/graph`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error("Failed to fetch graph data");
+    }
+    
+    return response.json();
+  },
+  
+  // Get global knowledge graph data
+  getGlobalGraph: async (confidenceThreshold: number = 0): Promise<GraphData> => {
+    const response = await fetch(`/api/graph?confidence=${confidenceThreshold}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error("Failed to fetch global graph data");
+    }
+    
+    return response.json();
   },
 };
 
