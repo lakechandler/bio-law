@@ -1,23 +1,18 @@
-export type LawStatus = "draft" | "review" | "published" | "archived";
-
 export interface Law {
     id: string;
     title: string;
     description: string;
-    category: string;
     content: string;
+    category: string;
     confidenceScore: number;
-    citationCount?: number;
-    sourceUrl?: string;
-    createdAt: Date | string;
-    updatedAt: Date | string;
-    status: LawStatus;
     tags: string[];
     supportingPapers: string[];
     contradictingPapers: string[];
-    publishedAt: Date | null;
-    archivedAt: Date | null;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+    archivedAt: string | null;
+    status: 'draft' | 'published' | 'archived';
     categoryId?: string;
-    authorId: string;
-    reviewerId?: string;
+    sourceUrl?: string;
 } 
